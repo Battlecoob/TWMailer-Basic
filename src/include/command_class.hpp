@@ -1,21 +1,18 @@
 #include <iostream>
 
-// enum ActionType
-// {
-//     SEND,
-//     LIST,
-//     READ,
-//     DEL,
-//     QUIT
-// };
-
-class Command // die einzelnen commands sollen inherited werden
+enum ActionType
 {
-private:
+    SEND,
+    LIST,
+    READ,
+    DEL,
+    QUIT
+};
 
+class Command // die einzelnen commands sollen vererbt werden
+{
 public:
-    Command();
-    ~Command();
-
+    ActionType type;
+    virtual int Action();
     virtual const void UserInput();
 };
