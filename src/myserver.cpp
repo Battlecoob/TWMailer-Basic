@@ -8,7 +8,7 @@
 int main() {
     std::cout << "myserver.cpp started..." << std::endl;
     
-    Server server = Server(PORT, PATH);
+    Server server(PORT, PATH);
     
     try
     {

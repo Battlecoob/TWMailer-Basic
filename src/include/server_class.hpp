@@ -26,7 +26,6 @@ private:
     struct sockaddr_in _address;
     struct sockaddr_in _cliaddress;
     
-
 public:
     Command _userInput;
     
