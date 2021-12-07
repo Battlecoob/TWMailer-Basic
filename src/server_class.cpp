@@ -16,13 +16,12 @@ bool Server::InitSocket()
     int reuseVal = 1;
 
     // signal handler
-    /*
+    
     if (signal(SIGINT, SignalHandler) == SIG_ERR) // expression must have class type but it has type "Server *"
     {
         std::cerr << "Signal can not be registered." << std::endl;
         return EXIT_FAILURE;
     }
-    */
 
     // create socket
     if((_createSocket = socket(AF_INET, SOCK_STREAM, 0)) != -1)

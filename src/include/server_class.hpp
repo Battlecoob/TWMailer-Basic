@@ -1,7 +1,7 @@
-#include <unistd.h> // close()
-#include <signal.h>
+#include <unistd.h>     // close()
+#include <csignal>      // signal(), raise(), ...
 #include <iostream>
-#include <string.h> // memset()
+#include <string.h>     // memset()
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -9,11 +9,11 @@
 
 #include "command_class.hpp"
 
-enum Response
-{
-    ERR = 0,
-    OK
-};
+// enum Response
+// {
+//     ERR = 0,
+//     OK
+// };
 
 class Server
 {
@@ -21,14 +21,17 @@ private:
     int _buf;
     int _port;
     int _reuseVal;
-    int _newSocket;
-    int _createSocket;
-    int _abortRequested;
-    Response _serverResponse;
+    // Response _serverResponse;
+    
     socklen_t _addressLength;
     std::string _mailSpoolDir;
+    
     struct sockaddr_in _address;
     struct sockaddr_in _cliaddress;
+    
+    static int _newSocket;
+    static int _createSocket;
+    static int _abortRequested;
 
 public:
     Command _userInput;
@@ -44,6 +47,6 @@ public:
 
     void ClientComm();
     void SendWelcome();
-    void SignalHandler(int sig);
+    static void SignalHandler(int sig);
     void CloseSockets(int socket);
 };
