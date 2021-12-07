@@ -1,10 +1,22 @@
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <iostream>
-#include "command_class.hpp"
 
 class Client
 {
 private:
-    /* data */
+    int _buf = 1024;
+    int _port = 6543;
+    int _create_socket;
+    char _buffer[1024];
+
+
 public:
     Client(/* args */);
     ~Client();
@@ -12,7 +24,7 @@ public:
     void readArguments(/* args */);
     //reads arguments and wrapps them into the class structure
 
-    void createConnection(/* args */);
+    bool createConnection(/* args */);
     //connects to server (websocket, ports, etc...)
 
     void clearConnection(/* args */);
