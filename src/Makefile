@@ -22,20 +22,25 @@ CFLAGS=-g -Wall -Wextra -O -std=c++2a -I /usr/local/include/gtest/ -pthread
 GTEST=/usr/local/lib/libgtest.a
 
 rebuild: clean all
-all: ./server ./client
+all:  client server
 
 clean:
 	clear
 	rm -f ./client ./server obj/*
 
-./obj/myclient.o: myclient.cpp
-	${CC} ${CFLAGS} -o obj/myclient.o myclient.cpp -c
+myclient.o: myclient.cpp ./include/client_class.hpp
+	$(CC) $(CFLAGS) -c myclient.cpp
 
-./obj/myserver.o: myserver.cpp
-	${CC} ${CFLAGS} -o obj/myserver.o myserver.cpp -c 
+client_class.o: ./include/client_class.hpp
 
-./server: ./obj/myserver.o
-	${CC} ${CFLAGS} -o server obj/myserver.o
+client: myclient.o client_class.o
+	$(CC) $(CFLAGS) -o ./client myclient.o client_class.o
 
-./client: ./obj/myclient.o
-	${CC} ${CFLAGS} -o client obj/myclient.o
+myserver.o: myserver.cpp ./include/server_class.hpp
+	$(CC) $(CFLAGS) -c myserver.cpp
+
+server_class.o: ./include/server_class.hpp
+
+server: myserver.o server_class.o
+	$(CC) $(CFLAGS) -o ./server myserver.o server_class.o
+
