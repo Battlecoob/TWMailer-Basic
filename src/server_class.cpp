@@ -13,8 +13,16 @@ Server::Server(int port, std::string mailSpoolDir)
 
 void Server::StartServer()
 {
-    if(!InitSocket()) throw "Socket initialization.";
-    if(!InitConnection()) throw "Socket connection failed.";    
+    if(!InitSocket())
+    {
+        std::cerr << "InitSocket" << std::endl;
+        throw "Socket initialization."; // TODO: exception class
+    }
+    if(!InitConnection())
+    {
+        std::cerr << "InitConnection" << std::endl;
+        throw "Socket connection failed."; // TODO: exception class
+    }
     ClientConnection();
 }
 
@@ -22,7 +30,7 @@ bool Server::InitSocket()
 {
     int reuseVal = 1;
 
-    // signal handler
+
     /*
     if (signal(SIGINT, SignalHandler) == SIG_ERR)
     {
@@ -32,7 +40,7 @@ bool Server::InitSocket()
     */
 
     // create socket
-    if((_createSocket = socket(AF_INET, SOCK_STREAM, 0)) != -1)
+    if((_createSocket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         std::cerr << "Socket Error." << std::endl;
         return EXIT_FAILURE;
@@ -51,7 +59,7 @@ bool Server::InitSocket()
         return EXIT_FAILURE;
     }
 
-    return EXIT_SUCCESS;
+    return true;
 }
 
 bool Server::InitConnection()
@@ -73,7 +81,7 @@ bool Server::InitConnection()
         return EXIT_FAILURE;
     }
     
-    return EXIT_SUCCESS;
+    return true;
 }
 
 void Server::ClientConnection()
@@ -102,11 +110,15 @@ void Server::ClientConnection()
 void Server::ClientComm(void *data)
 {
     int size;
-    char buffer[_buf]; // c string
+    char buffe[_buf]; // c string
+    std::string buffer;
     int *currentSocket = (int *)data;
 
-    strcpy(buffer, "Welcome to myserver!\r\nPlease enter your commands...\r\n");
-    if (send(*currentSocket, buffer, strlen(buffer), 0) == -1)
+    buffer.reserve(_buf);
+    buffer = "Welcome to myserver!\r\nPlease enter your commands...\r\n";
+    // strcpy(buffer, "Welcome to myserver!\r\nPlease enter your commands...\r\n");
+    // if (send(*currentSocket, buffer, strlen(buffer), 0) == -1)
+    if (send(*currentSocket, &buffer, buffer.length(), 0) == -1)
     {
         std::cerr << "Send failed." << std::endl;
         throw "Send failed.";
@@ -114,7 +126,7 @@ void Server::ClientComm(void *data)
 
     do
     {
-        size = recv(*currentSocket, buffer, _buf - 1, 0);
+        size = recv(*currentSocket, &buffer, _buf - 1, 0);
         if (size == -1)
         {
             if (_abortRequested)
@@ -133,17 +145,19 @@ void Server::ClientComm(void *data)
         }
 
         // remove ugly debug message, because of the sent newline of client
-        if (buffer[size - 2] == '\r' && buffer[size - 1] == '\n')
+        // if (buffer[size - 2] == '\r' && buffer[size - 1] == '\n')
+        if ((buffer.length() - 2) == '\r' && (buffer.length() - 1) == '\n')
         {
             size -= 2;
         }
-        else if (buffer[size - 1] == '\n')
+        // else if (buffer[size - 1] == '\n')
+        else if ((buffer.length() - 1) == '\n')
         {
             --size;
         }
 
-        buffer[size] = '\0';
-        printf("Message received: %s\n", buffer); // ignore error
+        // buffer[size] = '\0';
+        // printf("Message received: %s\n", buffer); // ignore error
         std::cout << "Message received: " << buffer << std::endl;
 
         if (send(*currentSocket, "OK", 3, 0) == -1)
@@ -151,7 +165,8 @@ void Server::ClientComm(void *data)
             std::cerr << "Send answer failed." << std::endl;
             throw "Send answer failed.";
         }
-    } while (strcmp(buffer, "quit") != 0 && !_abortRequested);
+    // } while (strcmp(buffer, "quit") != 0 && !_abortRequested);
+    } while (buffer.compare("QUIT") != 0 && !_abortRequested);
 }
 
 void Server::CloseSockets(int socket)
