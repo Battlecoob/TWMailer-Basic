@@ -6,7 +6,7 @@ Server::Server(int port, std::string mailSpoolDir)
     _port = 6543;
     _reuseVal = 1;
     _newSocket = -1;
-    _createSocket = -1;
+    _createSocket = 0;
     _abortRequested = 0;
     _mailSpoolDir = mailSpoolDir;
 }
@@ -14,8 +14,8 @@ Server::Server(int port, std::string mailSpoolDir)
 void Server::StartServer()
 {
     if(!InitSocket()) throw "Socket initialization.";
-    if(!InitConnection()) throw "Socket connection failed.";
-    if(!ClientConnection()) throw "Client connection failed.";
+    if(!InitConnection()) throw "Socket connection failed.";    
+    ClientConnection();
 }
 
 bool Server::InitSocket()
@@ -23,11 +23,13 @@ bool Server::InitSocket()
     int reuseVal = 1;
 
     // signal handler
+    /*
     if (signal(SIGINT, SignalHandler) == SIG_ERR)
     {
         std::cerr << "Signal can not be registered." << std::endl;
         return EXIT_FAILURE;
     }
+    */
 
     // create socket
     if((_createSocket = socket(AF_INET, SOCK_STREAM, 0)) != -1)
@@ -74,7 +76,7 @@ bool Server::InitConnection()
     return EXIT_SUCCESS;
 }
 
-bool Server::ClientConnection()
+void Server::ClientConnection()
 {
     while (!_abortRequested)
     {
@@ -97,17 +99,17 @@ bool Server::ClientConnection()
     }
 }
 
-void *Server::ClientComm(void *data)
+void Server::ClientComm(void *data)
 {
     int size;
-    char buffer[_buf];
+    char buffer[_buf]; // c string
     int *currentSocket = (int *)data;
 
     strcpy(buffer, "Welcome to myserver!\r\nPlease enter your commands...\r\n");
     if (send(*currentSocket, buffer, strlen(buffer), 0) == -1)
     {
         std::cerr << "Send failed." << std::endl;
-        return NULL;
+        throw "Send failed.";
     }
 
     do
@@ -147,7 +149,7 @@ void *Server::ClientComm(void *data)
         if (send(*currentSocket, "OK", 3, 0) == -1)
         {
             std::cerr << "Send answer failed." << std::endl;
-            return NULL;
+            throw "Send answer failed.";
         }
     } while (strcmp(buffer, "quit") != 0 && !_abortRequested);
 }

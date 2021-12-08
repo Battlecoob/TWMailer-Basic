@@ -18,6 +18,10 @@ int main() {
     {
         std::cerr << e.what() << '\n';
     }
+    catch(...)
+    {
+        std::cerr << "Thrown error." << std::endl;
+    }
 
     std::cout << "myserver.cpp terminated..." << std::endl;
     return 0;

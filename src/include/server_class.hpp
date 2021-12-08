@@ -16,9 +16,12 @@ private:
     int _port;
     int _reuseVal;
     
-    static int _newSocket;
-    static int _createSocket;
-    static int _abortRequested;
+    // static int _newSocket;
+    // static int _createSocket;
+    // static int _abortRequested;
+    int _newSocket;
+    int _createSocket;
+    int _abortRequested;
     
     socklen_t _addressLength;
     std::string _mailSpoolDir;
@@ -27,16 +30,16 @@ private:
     struct sockaddr_in _cliaddress;
     
 public:
-    Command _userInput;
+    // Command _userInput;
     
     Server(int port, std::string mailSpoolDir);
     
-    bool InitSocket(); //
-    bool InitConnection(); //
-    bool ClientConnection(); //
+    bool InitSocket();
+    bool InitConnection();
+    void ClientConnection();
 
-    void StartServer(); //
-    void *ClientComm(void *data); //
-    void CloseSockets(int socket); //
-    static void SignalHandler(int sig); //
+    void StartServer();
+    void ClientComm(void *data);
+    void CloseSockets(int socket);
+    void SignalHandler(int sig);
 };
