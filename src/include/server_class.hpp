@@ -9,19 +9,16 @@
 
 #include "command_class.hpp"
 
-// enum Response
-// {
-//     ERR = 0,
-//     OK
-// };
-
 class Server
 {
 private:
     int _buf;
     int _port;
     int _reuseVal;
-    // Response _serverResponse;
+    
+    int _newSocket;
+    int _createSocket;
+    int _abortRequested;
     
     socklen_t _addressLength;
     std::string _mailSpoolDir;
@@ -29,24 +26,17 @@ private:
     struct sockaddr_in _address;
     struct sockaddr_in _cliaddress;
     
-    static int _newSocket;
-    static int _createSocket;
-    static int _abortRequested;
-
 public:
-    Command _userInput;
+    // Command _userInput;
     
     Server(int port, std::string mailSpoolDir);
     
-    int ReceiveMsg();
-
     bool InitSocket();
-    bool StartServer();
     bool InitConnection();
-    bool ClientConnection();
+    void ClientConnection();
 
-    void ClientComm();
-    void SendWelcome();
-    static void SignalHandler(int sig);
+    void StartServer();
+    void ClientComm(void *data);
     void CloseSockets(int socket);
+    void SignalHandler(int sig);
 };

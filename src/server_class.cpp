@@ -6,31 +6,45 @@ Server::Server(int port, std::string mailSpoolDir)
     _port = port;
     _reuseVal = 1;
     _newSocket = -1;
-    _createSocket = -1;
+    _createSocket = 0;
     _abortRequested = 0;
     _mailSpoolDir = mailSpoolDir;
+}
+
+void Server::StartServer()
+{
+    if(!InitSocket())
+    {
+        std::cerr << "InitSocket" << std::endl;
+        throw "Socket initialization."; // TODO: exception class
+    }
+    if(!InitConnection())
+    {
+        std::cerr << "InitConnection" << std::endl;
+        throw "Socket connection failed."; // TODO: exception class
+    }
+    ClientConnection();
 }
 
 bool Server::InitSocket()
 {
     int reuseVal = 1;
 
-    // signal handler
-    
-    if (signal(SIGINT, SignalHandler) == SIG_ERR) // expression must have class type but it has type "Server *"
+
+    /*
+    if (signal(SIGINT, SignalHandler) == SIG_ERR)
     {
         std::cerr << "Signal can not be registered." << std::endl;
         return EXIT_FAILURE;
     }
+    */
 
-    // create socket
-    if((_createSocket = socket(AF_INET, SOCK_STREAM, 0)) != -1)
+    if((_createSocket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         std::cerr << "Socket Error." << std::endl;
         return EXIT_FAILURE;
     }
 
-    // set socket options
     if(setsockopt(_createSocket, SOL_SOCKET, SO_REUSEADDR, &reuseVal, sizeof(reuseVal)) == -1)
     {
         std::cerr << "Error while setting socket adress option." << std::endl;
@@ -43,7 +57,7 @@ bool Server::InitSocket()
         return EXIT_FAILURE;
     }
 
-    return EXIT_SUCCESS;
+    return true;
 }
 
 bool Server::InitConnection()
@@ -59,17 +73,103 @@ bool Server::InitConnection()
         return EXIT_FAILURE;
     }
     
-    if(listen(_createSocket, 5) == -1) // muss 5?
+    if(listen(_createSocket, 5) == -1)
     {
         std::cerr << "Listening error" << std::endl;
         return EXIT_FAILURE;
     }
     
-    return EXIT_SUCCESS;
+    return true;
 }
 
-bool Server::ClientConnection()
+void Server::ClientConnection()
 {
+    while (!_abortRequested)
+    {
+        std::cout << "Waiting for connections..." << std::endl;
+
+        _addressLength = sizeof(struct sockaddr_in);
+        if ((_newSocket = accept(_createSocket, (struct sockaddr *)&_cliaddress, &_addressLength)) == -1)
+        {
+            if(_abortRequested)
+                std::cerr << "Accept error after aborted." << std::endl;
+            else
+                std::cerr << "Accept error." << std::endl;
+
+            break;
+        }
+        
+        std::cout << "Client connected from " << inet_ntoa(_cliaddress.sin_addr) << ": " << ntohs(_cliaddress.sin_port) << "..." << std::endl;
+        ClientComm(&_newSocket);
+        _newSocket = -1;
+    }
+}
+
+void Server::ClientComm(void *data)
+{
+    int size;
+    char buffer[_buf];
+    int *currentSocket = (int *)data;
+
+    strcpy(buffer, "Welcome to myserver!\r\nPlease enter your commands...\r\n");
+    if (send(*currentSocket, buffer, strlen(buffer), 0) == -1)
+    {
+        std::cerr << "Send failed." << std::endl;
+        throw "Send failed.";
+    }
+
+    do
+    {
+        size = recv(*currentSocket, buffer, _buf - 1, 0);
+        if (size == -1)
+        {
+            if (_abortRequested)
+                std::cerr << "recv error after aborted." << std::endl;
+
+            else
+                std::cerr << "recv error." << std::endl;
+
+            break;
+        }
+
+        if (size == 0)
+        {
+            std::cout << "Client closed remote socket." << std::endl;
+            break;
+        }
+
+        if (buffer[size - 2] == '\r' && buffer[size - 1] == '\n')
+        {
+            size -= 2;
+        }
+        else if (buffer[size - 1] == '\n')
+        {
+            --size;
+        }
+
+        buffer[size] = '\0';
+        std::cout << "Message received: " << buffer << std::endl;
+
+        if (send(*currentSocket, "OK", 3, 0) == -1)
+        {
+            std::cerr << "Send answer failed." << std::endl;
+            throw "Send answer failed.";
+        }
+    } while (strcmp(buffer, "quit") != 0 && !_abortRequested);
+}
+
+void Server::CloseSockets(int socket)
+{
+    if (socket != -1)
+    {
+        if (shutdown(socket, SHUT_RDWR) == -1)
+            std::cerr << "Shutdown socket." << std::endl;
+
+        if (close(socket) == -1)
+            std::cerr << "Close creatsockete_socket." << std::endl;
+
+        socket = -1;
+    }
 }
 
 void Server::SignalHandler(int sig)
@@ -103,18 +203,4 @@ void Server::SignalHandler(int sig)
     }
     else
         exit(sig);
-}
-
-void Server::CloseSockets(int socket)
-{
-    if (socket != -1)
-    {
-        if (shutdown(socket, SHUT_RDWR) == -1)
-            perror("shutdown socket");
-
-        if (close(socket) == -1)
-            perror("close creatsockete_socket");
-
-        socket = -1;
-    }
 }

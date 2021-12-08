@@ -71,39 +71,12 @@ void Client::waitForNextCommand() {
             _buffer[size] = 0;
          }
          isQuit = strcmp(_buffer, "quit") == 0;
-
-         //////////////////////////////////////////////////////////////////////
-         // SEND DATA
-         // https://man7.org/linux/man-pages/man2/send.2.html
-         // send will fail if connection is closed, but does not set
-         // the error of send, but still the count of bytes sent
+         
          if ((send(_create_socket, _buffer, size, 0)) == -1) 
          {
-            // in case the server is gone offline we will still not enter
-            // this part of code: see docs: https://linux.die.net/man/3/send
-            // >> Successful completion of a call to send() does not guarantee 
-            // >> delivery of the message. A return value of -1 indicates only 
-            // >> locally-detected errors.
-            // ... but
-            // to check the connection before send is sense-less because
-            // after checking the communication can fail (so we would need
-            // to have 1 atomic operation to check...)
             perror("send error");
             break;
          }
-
-         //////////////////////////////////////////////////////////////////////
-         // RECEIVE FEEDBACK
-         // consider: reconnect handling might be appropriate in somes cases
-         //           How can we determine that the command sent was received 
-         //           or not? 
-         //           - Resend, might change state too often. 
-         //           - Else a command might have been lost.
-         //
-         // solution 1: adding meta-data (unique command id) and check on the
-         //             server if already processed.
-         // solution 2: add an infrastructure component for messaging (broker)
-         //
          size = recv(_create_socket, _buffer,_buf - 1, 0);
          if (size == -1)
          {
@@ -127,4 +100,22 @@ void Client::waitForNextCommand() {
          }
       }
    } while (!isQuit);
+}
+
+bool Client::clearConnection() {
+    if (_create_socket != -1)
+    {
+        if (shutdown(_create_socket, SHUT_RDWR) == -1)
+        {
+        // invalid in case the server is gone already
+        perror("shutdown create_socket"); 
+        }
+        if (close(_create_socket) == -1)
+        {
+            perror("close create_socket");
+        }
+        _create_socket = -1;
+   }
+
+   return EXIT_SUCCESS;
 }

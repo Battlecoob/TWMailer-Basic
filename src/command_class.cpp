@@ -2,8 +2,5 @@
 
 Command::Command()
 {
-}
-
-Command::~Command()
-{
+    std::cout << "Command test." << std::endl;
 }
