@@ -16,9 +16,6 @@ private:
     int _port;
     int _reuseVal;
     
-    // static int _newSocket;
-    // static int _createSocket;
-    // static int _abortRequested;
     int _newSocket;
     int _createSocket;
     int _abortRequested;

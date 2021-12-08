@@ -18,7 +18,7 @@ int main() {
     {
         std::cerr << e.what() << '\n';
     }
-    catch(...)
+    catch(...) // currently not working correctly -> throw exception class
     {
         std::cerr << "Thrown error." << std::endl;
     }

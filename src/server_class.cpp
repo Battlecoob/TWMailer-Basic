@@ -39,14 +39,12 @@ bool Server::InitSocket()
     }
     */
 
-    // create socket
     if((_createSocket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         std::cerr << "Socket Error." << std::endl;
         return EXIT_FAILURE;
     }
 
-    // set socket options
     if(setsockopt(_createSocket, SOL_SOCKET, SO_REUSEADDR, &reuseVal, sizeof(reuseVal)) == -1)
     {
         std::cerr << "Error while setting socket adress option." << std::endl;
@@ -75,7 +73,7 @@ bool Server::InitConnection()
         return EXIT_FAILURE;
     }
     
-    if(listen(_createSocket, 5) == -1) // muss 5?
+    if(listen(_createSocket, 5) == -1)
     {
         std::cerr << "Listening error" << std::endl;
         return EXIT_FAILURE;
@@ -110,7 +108,7 @@ void Server::ClientConnection()
 void Server::ClientComm(void *data)
 {
     int size;
-    char buffer[_buf]; // c string
+    char buffer[_buf];
     int *currentSocket = (int *)data;
 
     strcpy(buffer, "Welcome to myserver!\r\nPlease enter your commands...\r\n");
@@ -140,7 +138,6 @@ void Server::ClientComm(void *data)
             break;
         }
 
-        // remove ugly debug message, because of the sent newline of client
         if (buffer[size - 2] == '\r' && buffer[size - 1] == '\n')
         {
             size -= 2;
