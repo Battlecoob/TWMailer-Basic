@@ -15,6 +15,7 @@ private:
     int _port = 6543;
     int _create_socket;
     char _buffer[1024];
+    std::string _bufferstring;
 
 
 public:
@@ -27,7 +28,7 @@ public:
     bool createConnection(/* args */);
     //connects to server (websocket, ports, etc...)
 
-    void clearConnection(/* args */);
+    bool clearConnection(/* args */);
     //disconnects from server (websocket, ports, etc...)
 
     void waitForNextCommand(/* args */);

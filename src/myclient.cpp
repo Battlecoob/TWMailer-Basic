@@ -11,11 +11,10 @@ int main() {
 
     //start create connection method
     if(myClient->createConnection()){
-        //start input/command method
+        myClient->waitForNextCommand();
     }
 
-    //execute clear connection method
-
+    delete myClient;
 
     return 0;
 }
