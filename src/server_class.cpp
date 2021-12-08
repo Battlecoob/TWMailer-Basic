@@ -3,7 +3,7 @@
 Server::Server(int port, std::string mailSpoolDir)
 {
     _buf = 1024;
-    _port = 6543;
+    _port = port;
     _reuseVal = 1;
     _newSocket = -1;
     _createSocket = 0;
@@ -110,15 +110,11 @@ void Server::ClientConnection()
 void Server::ClientComm(void *data)
 {
     int size;
-    char buffe[_buf]; // c string
-    std::string buffer;
+    char buffer[_buf]; // c string
     int *currentSocket = (int *)data;
 
-    buffer.reserve(_buf);
-    buffer = "Welcome to myserver!\r\nPlease enter your commands...\r\n";
-    // strcpy(buffer, "Welcome to myserver!\r\nPlease enter your commands...\r\n");
-    // if (send(*currentSocket, buffer, strlen(buffer), 0) == -1)
-    if (send(*currentSocket, &buffer, buffer.length(), 0) == -1)
+    strcpy(buffer, "Welcome to myserver!\r\nPlease enter your commands...\r\n");
+    if (send(*currentSocket, buffer, strlen(buffer), 0) == -1)
     {
         std::cerr << "Send failed." << std::endl;
         throw "Send failed.";
@@ -126,7 +122,7 @@ void Server::ClientComm(void *data)
 
     do
     {
-        size = recv(*currentSocket, &buffer, _buf - 1, 0);
+        size = recv(*currentSocket, buffer, _buf - 1, 0);
         if (size == -1)
         {
             if (_abortRequested)
@@ -145,19 +141,16 @@ void Server::ClientComm(void *data)
         }
 
         // remove ugly debug message, because of the sent newline of client
-        // if (buffer[size - 2] == '\r' && buffer[size - 1] == '\n')
-        if ((buffer.length() - 2) == '\r' && (buffer.length() - 1) == '\n')
+        if (buffer[size - 2] == '\r' && buffer[size - 1] == '\n')
         {
             size -= 2;
         }
-        // else if (buffer[size - 1] == '\n')
-        else if ((buffer.length() - 1) == '\n')
+        else if (buffer[size - 1] == '\n')
         {
             --size;
         }
 
-        // buffer[size] = '\0';
-        // printf("Message received: %s\n", buffer); // ignore error
+        buffer[size] = '\0';
         std::cout << "Message received: " << buffer << std::endl;
 
         if (send(*currentSocket, "OK", 3, 0) == -1)
@@ -165,8 +158,7 @@ void Server::ClientComm(void *data)
             std::cerr << "Send answer failed." << std::endl;
             throw "Send answer failed.";
         }
-    // } while (strcmp(buffer, "quit") != 0 && !_abortRequested);
-    } while (buffer.compare("QUIT") != 0 && !_abortRequested);
+    } while (strcmp(buffer, "quit") != 0 && !_abortRequested);
 }
 
 void Server::CloseSockets(int socket)
