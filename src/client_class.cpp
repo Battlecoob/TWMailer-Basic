@@ -36,20 +36,151 @@ bool Client::createConnection() {
     return true;
 }
 
+bool Client::sendLine() {
+     if (fgets(_buffer, _buf, stdin) != NULL)
+      {
+         _size = strlen(_buffer);
+         if (_buffer[_size - 2] == '\r' && _buffer[_size - 1] == '\n')
+         {
+            _size -= 2;
+            _buffer[_size] = 0;
+         }
+         else if (_buffer[_size - 1] == '\n')
+         {
+            --_size;
+            _buffer[_size] = 0;
+         }
+        
+         if ((send(_create_socket, _buffer, _size, 0)) == -1) 
+         {
+            perror("send error");
+            return false;
+         }
+      }
+   return true;
+   
+}
+
+bool Client::recvLine() {
+
+         _size = recv(_create_socket, _buffer,_buf - 1, 0);
+         if (_size == -1)
+         {
+            perror("recv error");
+            return false;
+         }
+         else if (_size == 0)
+         {
+            printf("Server closed remote socket\n"); // ignore error
+            return false;
+         }
+         else
+         {
+            _buffer[_size] = '\0';
+            //printf("<< %s\n", _buffer); // ignore error
+            if (strcmp("OK", _buffer) != 0)
+            {
+               fprintf(stderr, "<< Server error occured, abort\n");
+               return false;
+            }
+         }
+   return true;
+   
+}
+
+void Client::SEND() {
+   bool end = false;
+
+   std::cout<<"sending..."<<std::endl;
+   std::cout<<">>Username:";
+   bool nextline = sendLine();
+   nextline = recvLine();
+   if(nextline) {
+   std::cout<<">>Reciever:";
+   nextline = sendLine();
+   nextline = recvLine();
+   }
+   if(nextline) {
+   std::cout<<">>Subject:";
+   nextline = sendLine();
+   nextline = recvLine();
+   }
+   if(nextline) {
+   std::cout<<">>Message:";
+   nextline = sendLine();
+   nextline = recvLine();
+   }
+   do
+   {
+      std::cout<<">>Continue Message:";
+      nextline = sendLine();
+      if(strcmp(".", _buffer) == 0) {
+         end = true;
+      }
+      nextline = recvLine();
+   } while(!end);
+   printf("<< %s\n", _buffer);
+   
+
+}
+void Client::READ() {
+   std::cout<<"reading..."<<std::endl;
+}
+void Client::LIST() {
+   std::cout<<"listing..."<<std::endl;
+}
+void Client::HELP() {
+   std::cout<<"helping..."<<std::endl;
+}
+void Client::DEL() {
+   std::cout<<"deleting..."<<std::endl;
+}
+
+int Client::readCommand() {
+
+   if(strcmp(_buffer, "SEND") == 0) {
+      SEND();
+      return _send;
+   }
+   else if(strcmp(_buffer, "LIST") == 0) {
+      LIST();
+      return _list;
+   }
+   else if(strcmp(_buffer, "READ") == 0) {
+      READ();
+      return _read;
+   }
+   else if(strcmp(_buffer, "DEL") == 0) {
+      DEL();
+      return _del;
+   }
+   else if(strcmp(_buffer, "HELP") == 0) {
+      HELP();
+      return _help;
+   }
+   if(strcmp(_buffer, "QUIT") == 0) {
+      return _quit;
+   }
+   else{
+      return -1;
+   }
+}
+
 void Client::waitForNextCommand() {
     int isQuit;
-    int size = recv(_create_socket, _buffer, _buf - 1, 0);
-   if (size == -1)
+    _size = recv(_create_socket, _buffer, _buf - 1, 0);
+    int command = 0;
+   if (_size == -1)
    {
       perror("recv error");
    }
-   else if (size == 0)
+   else if (_size == 0)
    {
       printf("Server closed remote socket\n"); // ignore error
    }
    else
    {
-      _buffer[size] = '\0';
+      _buffer[_size] = '\0';
       printf("%s", _buffer); // ignore error
    }
 
@@ -58,48 +189,20 @@ void Client::waitForNextCommand() {
       printf(">> ");
       if (fgets(_buffer, _buf, stdin) != NULL)
       {
-         int size = strlen(_buffer);
-         // remove new-line signs from string at the end
-         if (_buffer[size - 2] == '\r' && _buffer[size - 1] == '\n')
+         _size = strlen(_buffer);
+         if (_buffer[_size - 2] == '\r' && _buffer[_size - 1] == '\n')
          {
-            size -= 2;
-            _buffer[size] = 0;
+            _size -= 2;
+            _buffer[_size] = 0;
          }
-         else if (_buffer[size - 1] == '\n')
+         else if (_buffer[_size - 1] == '\n')
          {
-            --size;
-            _buffer[size] = 0;
+            --_size;
+            _buffer[_size] = 0;
          }
-         isQuit = strcmp(_buffer, "quit") == 0;
-         
-         if ((send(_create_socket, _buffer, size, 0)) == -1) 
-         {
-            perror("send error");
-            break;
-         }
-         size = recv(_create_socket, _buffer,_buf - 1, 0);
-         if (size == -1)
-         {
-            perror("recv error");
-            break;
-         }
-         else if (size == 0)
-         {
-            printf("Server closed remote socket\n"); // ignore error
-            break;
-         }
-         else
-         {
-            _buffer[size] = '\0';
-            printf("<< %s\n", _buffer); // ignore error
-            if (strcmp("OK", _buffer) != 0)
-            {
-               fprintf(stderr, "<< Server error occured, abort\n");
-               break;
-            }
-         }
+         command = readCommand();
       }
-   } while (!isQuit);
+   } while (command != _quit);
 }
 
 bool Client::clearConnection() {
