@@ -24,7 +24,7 @@ int main() {
     // {
     //     std::cerr << "Thrown error." << std::endl;
     // }
-    
+
     std::cout << "myserver.cpp terminated..." << std::endl;
     return 0;
 }

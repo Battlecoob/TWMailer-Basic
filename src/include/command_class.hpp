@@ -8,6 +8,8 @@ protected:
     Message _message;
 
 public:
+    Command(Message msg);
+
     virtual bool Action();
     virtual void UserInput();
 };

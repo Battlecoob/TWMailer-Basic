@@ -36,11 +36,16 @@ client_class.o: ./include/client_class.hpp
 client: myclient.o client_class.o
 	$(CC) $(CFLAGS) -o ./client myclient.o client_class.o
 
-myserver.o: myserver.cpp ./include/server_class.hpp
+myserver.o: myserver.cpp ./include/server_class.hpp ./include/command_class.hpp ./include/message_class.hpp ./include/send_class.hpp
 	$(CC) $(CFLAGS) -c myserver.cpp
 
 server_class.o: ./include/server_class.hpp
 
-server: myserver.o server_class.o
-	$(CC) $(CFLAGS) -o ./server myserver.o server_class.o
+command_class.o: ./include/command_class.hpp ./include/message_class.hpp
 
+message_class.o: ./include/message_class.hpp
+
+send_class.o: ./include/send_class.hpp ./include/command_class.hpp
+
+server: myserver.o server_class.o command_class.o message_class.o send_class.o
+	$(CC) $(CFLAGS) -o ./server myserver.o server_class.o command_class.o message_class.o send_class.o

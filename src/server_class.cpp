@@ -83,10 +83,11 @@ bool Server::InitConnection()
 
 bool Server::SetCommand(ActionType action)
 {
+    Message msg;
     switch (action)
     {
     case SEND:
-        UserCommand = new Send();
+        UserCommand = new Send(msg);
         break;
     // case LIST:
     //     /* code */

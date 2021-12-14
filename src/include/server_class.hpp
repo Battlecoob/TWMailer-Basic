@@ -8,7 +8,16 @@
 #include <netinet/in.h>
 
 #include "send_class.hpp"
-#include "actiontypes.hpp"
+// #include "actiontypes.hpp"
+
+enum ActionType
+{
+    SEND,
+    LIST,
+    READ,
+    DEL,
+    QUIT
+};
 
 class Server
 {
