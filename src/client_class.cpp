@@ -77,8 +77,7 @@ bool Client::recvLine() {
          else
          {
             _buffer[_size] = '\0';
-            //printf("<< %s\n", _buffer); // ignore error
-            if (strcmp("OK", _buffer) != 0)
+            if (strcmp("ERR", _buffer) == 0)
             {
                fprintf(stderr, "<< Server error occured, abort\n");
                return false;
@@ -89,9 +88,9 @@ bool Client::recvLine() {
 }
 
 void Client::SEND() {
+
    bool end = false;
 
-   std::cout<<"sending..."<<std::endl;
    std::cout<<">>Username:";
    bool nextline = sendLine();
    nextline = recvLine();
@@ -121,19 +120,55 @@ void Client::SEND() {
    } while(!end);
    printf("<< %s\n", _buffer);
    
-
 }
 void Client::READ() {
-   std::cout<<"reading..."<<std::endl;
+
+   std::cout<<">>Username:";
+   bool nextline = sendLine();
+   nextline = recvLine();
+   if(nextline) {
+   std::cout<<">>Message Number:";
+   nextline = sendLine();
+   nextline = recvLine();
+   }
+
+   /*
+   Nicht fertig SERVER antwort unklar 
+   printf(RESPONSE);
+   */
+
+   
 }
 void Client::LIST() {
-   std::cout<<"listing..."<<std::endl;
+
+   std::cout<<">>Username:";
+   bool nextline = sendLine();
+   nextline = recvLine();
+
+
+   /*
+   Nicht fertig SERVER antwort unklar 
+   int count = 3;
+   for (int i = 0; i < count; i++)
+   {
+      nextline = recvLine();
+   }
+   */
+   
 }
 void Client::HELP() {
    std::cout<<"helping..."<<std::endl;
+   std::cout<<"List valid commands when finished"<<std::endl;
 }
 void Client::DEL() {
-   std::cout<<"deleting..."<<std::endl;
+   std::cout<<">>Username:";
+   bool nextline = sendLine();
+   nextline = recvLine();
+   if(nextline) {
+   std::cout<<">>Message Number:";
+   nextline = sendLine();
+   nextline = recvLine();
+   }
 }
 
 int Client::readCommand() {
@@ -162,6 +197,7 @@ int Client::readCommand() {
       return _quit;
    }
    else{
+      printf("Invalid command! Type 'HELP' for a list of valid commands\n");
       return -1;
    }
 }
@@ -186,22 +222,10 @@ void Client::waitForNextCommand() {
 
    do
    {
+      printf("Please enter your command!\n");
       printf(">> ");
-      if (fgets(_buffer, _buf, stdin) != NULL)
-      {
-         _size = strlen(_buffer);
-         if (_buffer[_size - 2] == '\r' && _buffer[_size - 1] == '\n')
-         {
-            _size -= 2;
-            _buffer[_size] = 0;
-         }
-         else if (_buffer[_size - 1] == '\n')
-         {
-            --_size;
-            _buffer[_size] = 0;
-         }
-         command = readCommand();
-      }
+      sendLine();
+      command = readCommand();
    } while (command != _quit);
 }
 
