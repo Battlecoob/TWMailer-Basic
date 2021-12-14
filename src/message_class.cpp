@@ -1,9 +1,6 @@
 #include "include/message_class.hpp"
 
-Message::Message(/* args */)
+Message::Message()
 {
-}
-
-Message::~Message()
-{
+    _messageText.reserve(80); // sets max char to 80
 }

@@ -7,7 +7,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include "command_class.hpp"
+#include "send_class.hpp"
+#include "actiontypes.hpp"
 
 class Server
 {
@@ -19,6 +20,8 @@ private:
     int _newSocket;
     int _createSocket;
     int _abortRequested;
+
+    ActionType _tmpAction;
     
     socklen_t _addressLength;
     std::string _mailSpoolDir;
@@ -27,16 +30,17 @@ private:
     struct sockaddr_in _cliaddress;
     
 public:
-    // Command _userInput;
-    
     Server(int port, std::string mailSpoolDir);
     
+    Command *UserCommand;
+    
     bool InitSocket();
-    bool InitConnection();
-    void ClientConnection();
+    bool InitConnection(); 
+    bool SetCommand(ActionType action);
 
     void StartServer();
+    void ClientConnection();
     void ClientComm(void *data);
-    void CloseSockets(int socket);
     void SignalHandler(int sig);
+    void CloseSockets(int socket);
 };

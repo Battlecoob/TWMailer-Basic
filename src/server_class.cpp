@@ -30,7 +30,6 @@ bool Server::InitSocket()
 {
     int reuseVal = 1;
 
-
     /*
     if (signal(SIGINT, SignalHandler) == SIG_ERR)
     {
@@ -80,6 +79,34 @@ bool Server::InitConnection()
     }
     
     return true;
+}
+
+bool Server::SetCommand(ActionType action)
+{
+    switch (action)
+    {
+    case SEND:
+        UserCommand = new Send();
+        break;
+    // case LIST:
+    //     /* code */
+    //     break;
+    // case READ:
+    //     /* code */
+    //     break;
+    // case DEL:
+    //     /* code */
+    //     break;
+    // case QUIT:
+    //     /* code */
+    //     break;
+    default:
+        return false;
+        break;
+    }
+
+    return true;
+    // new message
 }
 
 void Server::ClientConnection()
@@ -150,11 +177,18 @@ void Server::ClientComm(void *data)
         buffer[size] = '\0';
         std::cout << "Message received: " << buffer << std::endl;
 
+        // if (strcmp(buffer, "SEND"))
+        // {
+        //     /* code */
+        // }
+        
+
         if (send(*currentSocket, "OK", 3, 0) == -1)
         {
             std::cerr << "Send answer failed." << std::endl;
             throw "Send answer failed.";
         }
+
     } while (strcmp(buffer, "quit") != 0 && !_abortRequested);
 }
 
