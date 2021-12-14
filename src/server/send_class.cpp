@@ -8,7 +8,4 @@ bool Send::Action()
     return true;
 }
 
-void Send::UserInput()
-{
-
-}
+void Send::UserInput(){}

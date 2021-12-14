@@ -1,0 +1,10 @@
+all: client server
+
+client: ./src/client/myclient.cpp
+	g++ -std=c++17 -Wall -Werror -o ./bin/client ./src/client/myclient.cpp ./src/client/include/client_class.hpp ./src/client/client_class.cpp
+
+server: ./src/server/myserver.cpp
+	g++ -std=c++17 -Wall -Werror -o ./bin/server ./src/server/command_class.cpp ./src/server/message_class.cpp ./src/server/myserver.cpp ./src/server/send_class.cpp ./src/server/server_class.cpp ./src/server/include/command_class.hpp ./src/server/include/message_class.hpp ./src/server/include/send_class.hpp ./src/server/include/server_class.hpp
+
+clean:
+	rm -f bin/*

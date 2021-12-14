@@ -89,18 +89,18 @@ bool Server::SetCommand(ActionType action)
     case SEND:
         UserCommand = new Send(msg);
         break;
-    // case LIST:
-    //     /* code */
-    //     break;
-    // case READ:
-    //     /* code */
-    //     break;
-    // case DEL:
-    //     /* code */
-    //     break;
-    // case QUIT:
-    //     /* code */
-    //     break;
+    case LIST:
+        /* code */
+        break;
+    case READ:
+        /* code */
+        break;
+    case DEL:
+        /* code */
+        break;
+    case QUIT:
+        /* code */
+        break;
     default:
         return false;
         break;
@@ -178,10 +178,38 @@ void Server::ClientComm(void *data)
         buffer[size] = '\0';
         std::cout << "Message received: " << buffer << std::endl;
 
-        // if (strcmp(buffer, "SEND"))
-        // {
-        //     /* code */
-        // }
+        if (strcmp(buffer, "SEND") == 0)
+        {
+            if(!SetCommand(SEND))
+                throw "SEND Obj init failed";
+            
+            UserCommand->Action();
+        } 
+        else if (strcmp(buffer, "LIST") == 0)
+        {
+            if(!SetCommand(LIST))
+                throw "LIST Obj init failed";
+            
+            UserCommand->Action();
+        } 
+        else if (strcmp(buffer, "READ") == 0)
+        {
+            if(!SetCommand(READ))
+                throw "READ Obj init failed";
+            
+            UserCommand->Action();
+        }
+        else if (strcmp(buffer, "DEL") == 0)
+        {
+            if(!SetCommand(DEL))
+                throw "DEL Obj init failed";
+            
+            UserCommand->Action();
+        }
+        else if (strcmp(buffer, "QUIT") == 0)
+        {
+            /* code */
+        }
         
 
         if (send(*currentSocket, "OK", 3, 0) == -1)

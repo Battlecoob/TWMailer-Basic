@@ -8,7 +8,6 @@
 #include <netinet/in.h>
 
 #include "send_class.hpp"
-// #include "actiontypes.hpp"
 
 enum ActionType
 {
