@@ -7,11 +7,10 @@
 int main(int argc, char* argv[]) {
     std::cout << "myserver.cpp started..." << std::endl;
     
-    Database db;
-
     int port = 6543;
     std::string path = "../database/";
 
+    //add to doku
     if(argc < 3) {
         std::cout<<"No or too few arguments provided"<<std::endl;
         std::cout<<"Using standard values instead"<<std::endl;
@@ -26,6 +25,7 @@ int main(int argc, char* argv[]) {
         path += argv[2];
     }
 
+    Database db;
     Server server(port, path, &db);
 
     try
