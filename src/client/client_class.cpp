@@ -177,7 +177,7 @@ void Client::DEL() {
    }
 }
 
-int Client::readCommand() {
+Command Client::readCommand() {
 
    if(strcmp(_buffer, "SEND") == 0) {
       return _send;
@@ -197,12 +197,10 @@ int Client::readCommand() {
    if(strcmp(_buffer, "QUIT") == 0) {
       return _quit;
    }
-   else{
-      return -1;
-   }
+   return _quit;
 }
 
-void Client::executeCommand(int execute) {
+void Client::executeCommand(Command execute) {
 
    switch (execute)
    {
@@ -231,7 +229,7 @@ void Client::executeCommand(int execute) {
 
 void Client::waitForNextCommand() {
     _size = recv(_create_socket, _buffer, _buf - 1, 0);
-    int command = -1;
+    Command command;
    if (_size == -1)
    {
       perror("recv error");
@@ -250,8 +248,8 @@ void Client::waitForNextCommand() {
    {
       printf("Please enter your command!\n");
       printf(">> ");
-      command = readCommand();
       sendLine();
+      command = readCommand();
       executeCommand(command);
 
    } while (command != _quit);

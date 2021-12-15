@@ -8,6 +8,16 @@
 #include <string.h>
 #include <iostream>
 
+enum Command 
+{ 
+    _send,
+    _list,
+    _read,
+    _del,
+    _help,
+    _quit
+};
+
 class Client
 {
 private:
@@ -17,14 +27,6 @@ private:
     char _buffer[1024];
     int _size;
     std::string _bufferstring;
-
-    enum Command { _send,
-        _list,
-        _read,
-        _del,
-        _help,
-        _quit};
-
 
 public:
     Client(/* args */);
@@ -42,8 +44,8 @@ public:
     void waitForNextCommand(/* args */);
     //loop that waits for user input, starts other method depending on input
 
-    int readCommand();
-    void executeCommand(int execute);
+    Command readCommand();
+    void executeCommand(Command execute);
 
     bool sendLine();
     bool recvLine();

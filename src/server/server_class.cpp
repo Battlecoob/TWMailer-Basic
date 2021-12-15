@@ -112,7 +112,7 @@ void Server::ClientComm(void *data)
     int *currentSocket = (int *)data;
 
     strcpy(buffer, "Welcome to myserver!\r\nPlease enter your commands...\r\n");
-    if (send(*currentSocket, buffer, strlen(buffer), 0) == -1)
+    if (send(_newSocket, buffer, strlen(buffer), 0) == -1)
     {
         std::cerr << "Send failed." << std::endl;
         throw "Send failed.";
@@ -157,6 +157,7 @@ void Server::ClientComm(void *data)
                 std::cerr << "Send answer failed." << std::endl;
                 throw "Send answer failed.";
             }
+            
             Send();
         }
 
@@ -174,7 +175,7 @@ void Server::ClientComm(void *data)
 
         else
         {
-            /* invalid input */
+            std::cout << "no compare" << std::endl;
         }
 
     } while (strcmp(buffer, "quit") != 0 && !_abortRequested);
@@ -229,6 +230,8 @@ void Server::SignalHandler(int sig)
 
 void Server::Send()
 {
+    printf("in send\n");
+
     int size;
     char buffer[_buf];
 
@@ -238,11 +241,10 @@ void Server::Send()
     bool subjSet = false;
     bool msgSet = false;
 
-    int *currentSocket = (int *) socket;
-
     do
     {
-        size = recv(*currentSocket, buffer, _buf - 1, 0);
+        // wait for input
+        size = recv(_newSocket, buffer, _buf - 1, 0);
         if (size == -1)
         {
             if (_abortRequested)
@@ -278,15 +280,14 @@ void Server::Send()
         }
 
         std::cout << "Message received: " << buffer << std::endl;
-
-        if(!nameSet)
+        if(nameSet == false)
         {
-            if(SecureInput(buffer) && strlen(buffer) <= 8)
+            if(SecureInput(buffer)/* && (int)strlen(buffer) <= 8*/)
             {
                 _tmpMsg.SetSender(buffer);
                 nameSet = true;
                 //send ok
-                if (send(*currentSocket, "OK", 3, 0) == -1)
+                if (send(_newSocket, "OK", 3, 0) == -1)
                 {
                     std::cerr << "Send answer failed." << std::endl;
                     throw "Send answer failed.";
@@ -294,18 +295,22 @@ void Server::Send()
             }
             else
             {
-                /* errorhandling */
+                if (send(_newSocket, "ERR", 4, 0) == -1)
+                {
+                    std::cerr << "Send answer failed." << std::endl;
+                    throw "Send answer failed.";
+                }
             }
         }
         else if(!recSet)
         {
-            if(SecureInput(buffer) && strlen(buffer) <= 8)
+            if(SecureInput(buffer) && (int)strlen(buffer) <= 8)
             {
                 _tmpUser.SetName(buffer);
                 _tmpMsg.SetReceiver(buffer);
                 recSet = true;
                 //send ok
-                if (send(*currentSocket, "OK", 3, 0) == -1)
+                if (send(_newSocket, "OK", 3, 0) == -1)
                 {
                     std::cerr << "Send answer failed." << std::endl;
                     throw "Send answer failed.";
@@ -313,7 +318,11 @@ void Server::Send()
             }
             else
             {
-                /* errorhandling */
+                if (send(_newSocket, "ERR", 4, 0) == -1)
+                {
+                    std::cerr << "Send answer failed." << std::endl;
+                    throw "Send answer failed.";
+                }
             }
         }
         else if(!subjSet)
@@ -323,7 +332,7 @@ void Server::Send()
                 _tmpMsg.SetSubject(buffer);
                 subjSet = true;
                 //send ok
-                if (send(*currentSocket, "OK", 3, 0) == -1)
+                if (send(_newSocket, "OK", 3, 0) == -1)
                 {
                     std::cerr << "Send answer failed." << std::endl;
                     throw "Send answer failed.";
@@ -340,7 +349,7 @@ void Server::Send()
             {
                 _tmpMsg.AppendMessageText(buffer);
                 //send ok
-                if (send(*currentSocket, "OK", 3, 0) == -1)
+                if (send(_newSocket, "OK", 3, 0) == -1)
                 {
                     std::cerr << "Send answer failed." << std::endl;
                     throw "Send answer failed.";
@@ -349,9 +358,10 @@ void Server::Send()
             else
                 msgSet = true; // eig unnoetig aber egal
         }
+
     } while (!period);
     _tmpUser.AddInbox(_tmpMsg); // user + msg soll dann der db uebergeben werden
-
+    std::cout << _tmpUser.GetName() << _tmpMsg.GetSender() << _tmpMsg.GetReceiver() << _tmpMsg.GetSubject() << _tmpMsg.GetText() << std::endl;
 }
 
 void Server::List() 
