@@ -15,7 +15,7 @@ bool Client::createConnection() {
     if ((_create_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         std::cerr << "Socket Error." << std::endl;
-        return EXIT_FAILURE;
+        return false;
     }
 
     memset(&address, 0, sizeof(address)); // init storage with 0
@@ -29,7 +29,7 @@ bool Client::createConnection() {
                sizeof(address)) == -1)
    {
         std::cerr << "Connect error - no server available" << std::endl;
-        return EXIT_FAILURE;
+        return false;
    }
 
     std::cout<<"Connection established"<<std::endl;
@@ -109,6 +109,7 @@ void Client::SEND() {
    nextline = sendLine();
    nextline = recvLine();
    }
+   // exclude the do-while-loop for non multiline messages
    do
    {
       std::cout<<">>Continue Message:";
@@ -133,7 +134,7 @@ void Client::READ() {
    }
 
    /*
-   Nicht fertig SERVER antwort unklar 
+   //ZEILE für ZEILE SEND
    printf(RESPONSE);
    */
 
@@ -147,9 +148,12 @@ void Client::LIST() {
 
 
    /*
-   Nicht fertig SERVER antwort unklar 
-   int count = 3;
+   int count = _buffer;
    for (int i = 0; i < count; i++)
+
+   //SERVER response:
+   count
+   für jede nachricht ID; Content
    {
       nextline = recvLine();
    }
@@ -174,38 +178,58 @@ void Client::DEL() {
 int Client::readCommand() {
 
    if(strcmp(_buffer, "SEND") == 0) {
-      SEND();
       return _send;
    }
    else if(strcmp(_buffer, "LIST") == 0) {
-      LIST();
       return _list;
    }
    else if(strcmp(_buffer, "READ") == 0) {
-      READ();
       return _read;
    }
    else if(strcmp(_buffer, "DEL") == 0) {
-      DEL();
       return _del;
    }
    else if(strcmp(_buffer, "HELP") == 0) {
-      HELP();
       return _help;
    }
    if(strcmp(_buffer, "QUIT") == 0) {
       return _quit;
    }
    else{
-      printf("Invalid command! Type 'HELP' for a list of valid commands\n");
       return -1;
    }
 }
 
+void Client::executeCommand(int execute) {
+
+   switch (execute)
+   {
+   case _send:
+      SEND();
+      break;
+   case _list:
+      LIST();
+      break;
+   case _read:
+      READ();
+      break;
+   case _del:
+      DEL();
+      break;
+   case _help:
+      HELP();
+      break;
+   case _quit:
+      break;   
+   default:
+      printf("Invalid command! Type 'HELP' for a list of valid commands\n");
+      break;
+   }
+}
+
 void Client::waitForNextCommand() {
-    int isQuit;
     _size = recv(_create_socket, _buffer, _buf - 1, 0);
-    int command = 0;
+    int command = -1;
    if (_size == -1)
    {
       perror("recv error");
@@ -224,8 +248,10 @@ void Client::waitForNextCommand() {
    {
       printf("Please enter your command!\n");
       printf(">> ");
-      sendLine();
       command = readCommand();
+      sendLine();
+      executeCommand(command);
+
    } while (command != _quit);
 }
 
@@ -234,7 +260,6 @@ bool Client::clearConnection() {
     {
         if (shutdown(_create_socket, SHUT_RDWR) == -1)
         {
-        // invalid in case the server is gone already
         perror("shutdown create_socket"); 
         }
         if (close(_create_socket) == -1)

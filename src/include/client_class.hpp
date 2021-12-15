@@ -43,6 +43,7 @@ public:
     //loop that waits for user input, starts other method depending on input
 
     int readCommand();
+    void executeCommand(int execute);
 
     bool sendLine();
     bool recvLine();
