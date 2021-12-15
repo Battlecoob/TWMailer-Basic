@@ -7,16 +7,14 @@ class User
 {
 private:
     std::string _username;
-    std::vector<Message> _recMessages;
-    std::vector<Message> _sentMessages;
+    std::vector<Message> _messages;
 
 public:
     void SetName(std::string name) { _username = name; }
 
+    // const Message GetMessageById(int i);
     const std::string GetName() { return _username; }
-    const std::vector<Message> GetReceivedMessages() { return _recMessages; }
-    const std::vector<Message> GetSentMessages() { return _sentMessages; }
+    const std::vector<Message> GetMessages() { return _messages; }
 
     void AddInbox(Message msg);
-    void AddSent(Message msg);
 };

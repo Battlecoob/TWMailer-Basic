@@ -2,10 +2,5 @@
 
 void User::AddInbox(Message msg)
 {
-    _recMessages.push_back(msg);
-}
-
-void User::AddSent(Message msg)
-{
-    _sentMessages.push_back(msg);
+    _messages.push_back(msg);
 }

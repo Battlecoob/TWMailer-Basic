@@ -1,3 +1,3 @@
 #include <iostream>
 
-bool secureInput(std::string str);
+bool SecureInput(std::string str);

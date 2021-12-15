@@ -1,7 +1,7 @@
 #include <unistd.h>     // close()
 #include <csignal>      // signal(), raise(), ...
-#include <iostream>
 #include <string.h>     // memset()
+#include <iostream>
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -49,7 +49,7 @@ public:
     void SetAction(ActionType act) { _action = act; } // braucht man vlt gar nicht
 
     bool InitSocket();
-    bool InitConnection(); 
+    bool InitConnection();
     // bool SetCommand(ActionType action);
 
     void StartServer();
@@ -58,8 +58,8 @@ public:
     void SignalHandler(int sig);
     void CloseSockets(int socket);
 
-    bool Send();
-    bool List();
-    bool Read();
-    bool Delete();
+    void Send();
+    void List();
+    void Read();
+    void Delete();
 };

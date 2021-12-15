@@ -16,6 +16,6 @@ public:
     void SetSender(std::string sender) { _sender = sender; }
     void SetSubject(std::string subject) { _subject = subject; }
     void SetReceiver(std::string receiver) { _receiver = receiver; }
-    void SetMessageText(std::string messageText) { _messageText = messageText; }
+    void AppendMessageText(std::string messageText) { _messageText += messageText; }
 };
 

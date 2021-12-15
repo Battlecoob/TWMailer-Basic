@@ -151,7 +151,14 @@ void Server::ClientComm(void *data)
         std::cout << "Message received: " << buffer << std::endl;
 
         if (strcmp(buffer, "SEND") == 0)
+        {
+            if (send(*currentSocket, "OK", 3, 0) == -1)
+            {
+                std::cerr << "Send answer failed." << std::endl;
+                throw "Send answer failed.";
+            }
             Send();
+        }
 
         else if (strcmp(buffer, "LIST") == 0)
             List();
@@ -169,13 +176,6 @@ void Server::ClientComm(void *data)
         {
             /* invalid input */
         }
-
-        // is nur tmp noch da. 
-        // if (send(*currentSocket, "OK", 3, 0) == -1)
-        // {
-        //     std::cerr << "Send answer failed." << std::endl;
-        //     throw "Send answer failed.";
-        // }
 
     } while (strcmp(buffer, "quit") != 0 && !_abortRequested);
 }
@@ -227,19 +227,19 @@ void Server::SignalHandler(int sig)
         exit(sig);
 }
 
-bool Server::Send()
+void Server::Send()
 {
     int size;
     char buffer[_buf];
 
-    bool inputReceived = false;
+    bool period = false;
+    bool nameSet = false;
+    bool recSet = false;
+    bool subjSet = false;
+    bool msgSet = false;
 
     int *currentSocket = (int *) socket;
-    if (send(*currentSocket, "<Sender>", 7, 0) == -1)
-    {
-        std::cerr << "Send answer failed." << std::endl;
-        throw "Send answer failed.";
-    }
+
     do
     {
         size = recv(*currentSocket, buffer, _buf - 1, 0);
@@ -270,29 +270,98 @@ bool Server::Send()
         }
 
         buffer[size] = '\0';
+
+        if (strcmp(buffer, ".") == 0) // end of command
+        {
+            period = true;
+            break;
+        }
+
         std::cout << "Message received: " << buffer << std::endl;
 
-        if(secureInput(buffer))
+        if(!nameSet)
         {
-            _tmpUser.SetName(buffer);
-            return true;
+            if(SecureInput(buffer) && strlen(buffer) <= 8)
+            {
+                _tmpMsg.SetSender(buffer);
+                nameSet = true;
+                //send ok
+                if (send(*currentSocket, "OK", 3, 0) == -1)
+                {
+                    std::cerr << "Send answer failed." << std::endl;
+                    throw "Send answer failed.";
+                }
+            }
+            else
+            {
+                /* errorhandling */
+            }
         }
-        
-    } while (!inputReceived);
-    return false;
+        else if(!recSet)
+        {
+            if(SecureInput(buffer) && strlen(buffer) <= 8)
+            {
+                _tmpUser.SetName(buffer);
+                _tmpMsg.SetReceiver(buffer);
+                recSet = true;
+                //send ok
+                if (send(*currentSocket, "OK", 3, 0) == -1)
+                {
+                    std::cerr << "Send answer failed." << std::endl;
+                    throw "Send answer failed.";
+                }
+            }
+            else
+            {
+                /* errorhandling */
+            }
+        }
+        else if(!subjSet)
+        {
+            if (strlen(buffer) < 81)
+            {
+                _tmpMsg.SetSubject(buffer);
+                subjSet = true;
+                //send ok
+                if (send(*currentSocket, "OK", 3, 0) == -1)
+                {
+                    std::cerr << "Send answer failed." << std::endl;
+                    throw "Send answer failed.";
+                }
+            }
+            else
+            {
+                /* errorhandling */
+            }
+        }
+        else if (!msgSet)
+        {
+            if(!period)
+            {
+                _tmpMsg.AppendMessageText(buffer);
+                //send ok
+                if (send(*currentSocket, "OK", 3, 0) == -1)
+                {
+                    std::cerr << "Send answer failed." << std::endl;
+                    throw "Send answer failed.";
+                }
+            }
+            else
+                msgSet = true; // eig unnoetig aber egal
+        }
+    } while (!period);
+    _tmpUser.AddInbox(_tmpMsg); // user + msg soll dann der db uebergeben werden
+
 }
 
-bool Server::List() 
+void Server::List() 
 {
-    return false;
 }
 
-bool Server::Read() 
+void Server::Read() 
 {
-    return false;
 }
 
-bool Server::Delete() 
+void Server::Delete() 
 {
-    return false;
 }

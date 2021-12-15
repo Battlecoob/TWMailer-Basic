@@ -1,6 +1,6 @@
 #include "functions.hpp"
 
-bool secureInput(std::string str)
+bool SecureInput(std::string str)
 {
     for (int c = 0; c < (int)str.size(); c++)
     {
