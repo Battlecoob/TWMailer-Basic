@@ -144,7 +144,9 @@ void Client::LIST() {
 
    std::cout<<">>Username:";
    bool nextline = sendLine();
+   if(nextline) {
    nextline = recvLine();
+   }
 
 
    /*
