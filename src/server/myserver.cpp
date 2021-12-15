@@ -1,15 +1,32 @@
 #include <stdio.h>
+#include <dirent.h>
 
 #include "include/server_class.hpp"
 
-#define PORT 6543
-#define PATH ""
 
-int main() {
+int main(int argc, char* argv[]) {
     std::cout << "myserver.cpp started..." << std::endl;
     
     Database db;
-    Server server(PORT, PATH, &db);
+
+    int port = 6543;
+    std::string path = "../database/";
+
+    if(argc < 3) {
+        std::cout<<"No or too few arguments provided"<<std::endl;
+        std::cout<<"Using standard values instead"<<std::endl;
+        path += "my_mail_db";
+    }
+    else if(opendir((path+argv[2]).c_str()) == NULL) {
+        std::cout<<"Directory " << argv[2] << " does not exist"<<std::endl;
+        return EXIT_FAILURE;
+    }
+    else {
+        port = std::stoi(argv[1]);
+        path += argv[2];
+    }
+
+    Server server(port, path, &db);
 
     try
     {
