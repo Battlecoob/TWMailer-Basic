@@ -1,15 +1,15 @@
-#include <iostream>
+// #include <iostream>
+// #include <sys/socket.h>
 
-#include "message_class.hpp"
+// class Command // die einzelnen commands sollen vererbt werden
+// {
+// private:
+//     User _tmpUser;
+//     Message _tmpMsg;
 
-class Command // die einzelnen commands sollen vererbt werden
-{
-protected:
-    Message _message;
-
-public:
-    Command(Message msg);
-
-    virtual bool Action();
-    virtual void UserInput();
-};
+// public:
+//     bool Send(void* socket);
+//     bool List();
+//     bool Read();
+//     bool Delete();
+// };

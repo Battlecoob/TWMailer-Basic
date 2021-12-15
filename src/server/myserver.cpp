@@ -8,8 +8,14 @@
 int main() {
     std::cout << "myserver.cpp started..." << std::endl;
     
-    Server server(PORT, PATH);
+    Database db;
+    Server server(PORT, PATH, &db);
+    char test[5] = "test";
+    if(secureInput(test))
+        std::cout <<  test << std::endl;
 
+
+/*
     try
     {
         server.StartServer();
@@ -22,7 +28,7 @@ int main() {
     {
         std::cerr << "Thrown error." << std::endl;
     }
-
+*/
     std::cout << "myserver.cpp terminated..." << std::endl;
     return 0;
 }

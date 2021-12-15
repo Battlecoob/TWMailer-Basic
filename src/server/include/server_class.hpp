@@ -7,7 +7,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include "send_class.hpp"
+// #include "command_class.hpp"
+#include "database_class.hpp"
+#include "../../share/functions.hpp"
 
 enum ActionType
 {
@@ -24,12 +26,14 @@ private:
     int _buf;
     int _port;
     int _reuseVal;
-    
     int _newSocket;
     int _createSocket;
     int _abortRequested;
 
-    ActionType _tmpAction;
+    Database _db;
+    User _tmpUser;
+    Message _tmpMsg;
+    ActionType _action;
     
     socklen_t _addressLength;
     std::string _mailSpoolDir;
@@ -38,17 +42,24 @@ private:
     struct sockaddr_in _cliaddress;
     
 public:
-    Server(int port, std::string mailSpoolDir);
+    Server(int port, std::string mailSpoolDir, Database *db);
     
-    Command *UserCommand;
+    // Command UserCommand;
     
+    void SetAction(ActionType act) { _action = act; } // braucht man vlt gar nicht
+
     bool InitSocket();
     bool InitConnection(); 
-    bool SetCommand(ActionType action);
+    // bool SetCommand(ActionType action);
 
     void StartServer();
     void ClientConnection();
     void ClientComm(void *data);
     void SignalHandler(int sig);
     void CloseSockets(int socket);
+
+    bool Send();
+    bool List();
+    bool Read();
+    bool Delete();
 };

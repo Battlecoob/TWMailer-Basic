@@ -3,9 +3,9 @@
 class Message
 {
 protected:
-public:
     std::string _sender, _subject, _receiver, _messageText;
 
+public:
     Message();
 
     std::string GetSender() { return _sender; }
