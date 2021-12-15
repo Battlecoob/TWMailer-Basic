@@ -7,4 +7,4 @@ server: ./src/server/myserver.cpp
 	g++ -std=c++17 -Wall -Werror -o ./bin/server ./src/server/command_class.cpp ./src/server/message_class.cpp ./src/server/myserver.cpp ./src/server/server_class.cpp ./src/server/include/command_class.hpp ./src/server/include/message_class.hpp ./src/server/include/server_class.hpp ./src/server/include/database_class.hpp ./src/server/database_class.cpp ./src/server/user_class.cpp ./src/server/include/user_class.hpp ./src/share/functions.cpp ./src/share/functions.hpp
 
 clean:
-	rm -f bin/*
+	rm -f *.o

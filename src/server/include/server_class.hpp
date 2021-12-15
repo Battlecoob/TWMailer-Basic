@@ -36,7 +36,7 @@ private:
     ActionType _action;
     
     socklen_t _addressLength;
-    std::string _mailSpoolDir;
+    std::string _mailSpoolDir; // prepend and append "/"
     
     struct sockaddr_in _address;
     struct sockaddr_in _cliaddress;

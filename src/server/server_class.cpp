@@ -360,8 +360,16 @@ void Server::Send()
         }
 
     } while (!period);
+
     _tmpUser.AddInbox(_tmpMsg); // user + msg soll dann der db uebergeben werden
-    std::cout << _tmpUser.GetName() << _tmpMsg.GetSender() << _tmpMsg.GetReceiver() << _tmpMsg.GetSubject() << _tmpMsg.GetText() << std::endl;
+    // testing
+    // std::cout << _tmpUser.GetName() << _tmpMsg.GetSender() << _tmpMsg.GetReceiver() << _tmpMsg.GetSubject() << _tmpMsg.GetText() << std::endl;
+    if(_db.IsNewUser(_tmpUser))
+    {
+        std::cout << "dir test" << std::endl;
+        _db.AddUser(_tmpUser);
+    }
+        
 }
 
 void Server::List() 

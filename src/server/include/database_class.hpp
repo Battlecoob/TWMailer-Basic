@@ -1,5 +1,14 @@
-#include <iostream>
 #include <vector>
+#include <iostream>
+#include <sys/stat.h> // mkdir
+#include <sys/types.h>
+#include <bits/stdc++.h>
+
+// #ifndef BOOST_ALL_DYN_LINK
+// #   define BOOST_ALL_DYN_LINK
+// #endif 
+// #include <boost/filesystem.hpp>
+
 
 #include "user_class.hpp"
 
@@ -10,12 +19,16 @@ private:
     std::vector<User> _users;
 
 public:
+    Database();
+
     const User GetUserByName();
     const std::string GetDirectory() {return _directory; }
     const std::vector<User> GetUsers() { return _users; }
 
+    const bool IsNewUser(User user);
+
+    void AddUser(User user);
     void SetDirectory(std::string dir) { _directory = dir; }
-    void AddUser(User user) { _users.push_back(user); }
 
     // bool SafeMessage(User user);
     // bool GetMessage(User user, /* unique identifier */);
