@@ -3,7 +3,7 @@
 #include "include/server_class.hpp"
 
 #define PORT 6543
-#define PATH ""
+#define PATH "my_mail_db"
 
 int main() {
     std::cout << "myserver.cpp started..." << std::endl;
