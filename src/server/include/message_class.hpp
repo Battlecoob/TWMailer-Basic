@@ -18,4 +18,3 @@ public:
     void SetReceiver(std::string receiver) { _receiver = receiver; }
     void AppendMessageText(std::string messageText) { _messageText += messageText; }
 };
-

@@ -36,7 +36,7 @@ private:
     ActionType _action;
     
     socklen_t _addressLength;
-    std::string _mailSpoolDir;
+    std::string _mailSpoolDir; // append "/"
     
     struct sockaddr_in _address;
     struct sockaddr_in _cliaddress;
@@ -47,6 +47,8 @@ public:
     // Command UserCommand;
     
     void SetAction(ActionType act) { _action = act; } // braucht man vlt gar nicht
+
+    const std::string GetMailDir() { return _mailSpoolDir; }
 
     bool InitSocket();
     bool InitConnection();

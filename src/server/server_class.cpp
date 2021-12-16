@@ -9,7 +9,10 @@ Server::Server(int port, std::string mailSpoolDir, Database *db)
     _newSocket = -1;
     _createSocket = 0;
     _abortRequested = 0;
-    _mailSpoolDir = mailSpoolDir;
+    _mailSpoolDir = mailSpoolDir + "/";
+
+    _db.SetDirectory(_mailSpoolDir);
+    _db.FillDB();
 }
 
 void Server::StartServer()
@@ -360,8 +363,19 @@ void Server::Send()
         }
 
     } while (!period);
-    _tmpUser.AddInbox(_tmpMsg); // user + msg soll dann der db uebergeben werden
-    std::cout << _tmpUser.GetName() << _tmpMsg.GetSender() << _tmpMsg.GetReceiver() << _tmpMsg.GetSubject() << _tmpMsg.GetText() << std::endl;
+
+    // _tmpUser.AddMessage(_tmpMsg); // user + msg soll dann der db uebergeben werden
+
+    if(_db.IsNewUser(_tmpUser))
+    {
+        std::cout << "dir test" << std::endl;
+        if(!_db.AddUser(_tmpUser)) 
+        {
+            // errorhandeling
+        }
+    }
+
+    _db.AddMessage(_tmpUser, _tmpMsg);    
 }
 
 void Server::List() 
