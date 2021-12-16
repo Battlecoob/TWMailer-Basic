@@ -11,6 +11,8 @@ private:
     std::vector<Message> _messages;
 
 public:
+    User();
+
     void SetName(std::string name) { _username = name; }
 
     // const Message GetMessageById(int i);
@@ -18,6 +20,6 @@ public:
     const std::string GetName() { return _username; }
     const std::vector<Message> GetMessages() { return _messages; }
 
-    void AddInbox(Message msg);
+    void AddMessage(Message msg);
     void UpdateMsgCounter() { _msgCount = _messages.size(); }
 };

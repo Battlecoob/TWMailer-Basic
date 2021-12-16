@@ -1,6 +1,11 @@
 #include "include/user_class.hpp"
 
-void User::AddInbox(Message msg)
+User::User()
+{
+    _msgCount = 0;
+}
+
+void User::AddMessage(Message msg)
 {
     _messages.push_back(msg);
     UpdateMsgCounter();

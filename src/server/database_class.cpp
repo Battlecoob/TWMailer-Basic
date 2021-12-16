@@ -3,12 +3,6 @@
 Database::Database()
 {
     _directory = "../TWMailer-Basic/database/"; // /home/battlecoob/dev/TWMailer-Basic/database
-
-    // fill users vector
-    using recursive_directory_iterator = std::experimental::filesystem::recursive_directory_iterator;
-    
-    // for (const auto& dirEntry : recursive_directory_iterator(_directory))
-    //     std::cout << dirEntry << std::endl;
 }
 
 /*
@@ -21,6 +15,55 @@ const User Database::GetUserByName(User tmpuser)
     }
 }
 */
+
+void Database::FillDB()
+{
+    // iterator for dir
+    using directory_iterator = std::experimental::filesystem::directory_iterator;
+    // iterate through dir
+    for (const auto& dirEntry : directory_iterator(_directory))
+    {        
+        // add user to _users vector
+        User newUser;
+        newUser.SetName(dirEntry.path().stem().string());
+        _users.push_back(newUser);
+    }
+    // iterate through users
+    for (auto u : _users)
+    {
+        // iterate through messages in user folder
+        for (const auto& dirEntry : directory_iterator(_directory + u.GetName()))
+        {
+            std::string tmpstr;
+            std::cout << dirEntry.path().string() << std::endl;
+
+            Message newMsg;
+            std::ifstream msgFile;
+            msgFile.open(dirEntry.path().string());
+            
+            // sender
+            getline(msgFile, tmpstr);
+            newMsg.SetSender(tmpstr);
+
+            // receiver
+            getline(msgFile, tmpstr);
+            newMsg.SetReceiver(tmpstr);
+            
+            // subject
+            getline(msgFile, tmpstr);
+            newMsg.SetSubject(tmpstr);
+
+            // message text
+            while (getline(msgFile, tmpstr)) 
+                newMsg.AppendMessageText(tmpstr);
+            
+            msgFile.close();
+            u.AddMessage(newMsg);
+        }
+        u.UpdateMsgCounter();
+        std::cout << u.GetName() << u.GetMsgCounter() << std::endl;
+    }
+}
 
 const int Database::GetUserPositionInVector(User tmpuser)
 {
@@ -42,7 +85,7 @@ const bool Database::IsNewUser(User user)
     return true;
 }
 
-bool Database::AddUser(User user, std::string mailSpoolDir)
+bool Database::AddUser(User user)
 {
     // add to user vector
     user.UpdateMsgCounter();
@@ -51,7 +94,7 @@ bool Database::AddUser(User user, std::string mailSpoolDir)
     std::cout << "Msg counter: " << user.GetMsgCounter() << std::endl;
 
     char resolved_path[PATH_MAX];
-    realpath((_directory + mailSpoolDir + user.GetName()).c_str(), resolved_path);
+    realpath((_directory + user.GetName()).c_str(), resolved_path);
 
     if(mkdir(resolved_path, 0777) == -1){
         std::cerr << "Error :  " << strerror(errno) << std::endl;
@@ -62,15 +105,16 @@ bool Database::AddUser(User user, std::string mailSpoolDir)
     return true;
 }
 
-bool Database::AddMessage(User tmpuser, std::string mailSpoolDir)
+void Database::AddMessage(User tmpuser, Message tmpmsg)
 {
     int positionInVec = GetUserPositionInVector(tmpuser);
     if(positionInVec != -1)
         EXIT_FAILURE;
 
-    std::string userDir =  (_directory + mailSpoolDir + _users[positionInVec].GetName() + "/").c_str();
-    
-    auto filename = _users[positionInVec].GetMsgCounter();
+    // add message to user
+    _users[positionInVec].AddMessage(tmpmsg);
+    std::string userDir =  (_directory + _users[positionInVec].GetName() + "/").c_str();
+    auto filename = _users[positionInVec].GetMsgCounter() + 1;
 
     // create file -> msg counter from folder name
     std::ofstream File(userDir + std::to_string(filename));
@@ -84,5 +128,5 @@ bool Database::AddMessage(User tmpuser, std::string mailSpoolDir)
             << userMsg[_users[positionInVec].GetMsgCounter()-1].GetText();
     
     File.close();
-    return false;
+    std::cout << "file created" << std::endl;
 }

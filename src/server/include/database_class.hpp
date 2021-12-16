@@ -23,16 +23,18 @@ private:
 public:
     Database();
 
+    void SetDirectory(std::string dir) { _directory += dir; }
+
     // const User GetUserByName(User tmpuser);
     const int GetUserPositionInVector(User tmpuser);
     const std::vector<User> GetUsers() { return _users; }
     const std::string GetDirectory() {return _directory; }
 
-    const bool IsNewUser(User user);
+    void FillDB();
 
-    bool AddUser(User user, std::string mailSpoolDir);
-    bool AddMessage(User user, std::string mailSpoolDir);
-    void SetDirectory(std::string dir) { _directory = dir; }
+    const bool IsNewUser(User user);
+    bool AddUser(User user/*, std::string mailSpoolDir*/);
+    void AddMessage(User user, Message tmpmsg);
 
     // bool SafeMessage(User user);
     // bool GetMessage(User user, /* unique identifier */);

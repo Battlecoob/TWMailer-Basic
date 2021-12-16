@@ -48,6 +48,8 @@ public:
     
     void SetAction(ActionType act) { _action = act; } // braucht man vlt gar nicht
 
+    const std::string GetMailDir() { return _mailSpoolDir; }
+
     bool InitSocket();
     bool InitConnection();
     // bool SetCommand(ActionType action);
