@@ -24,6 +24,5 @@ int main(int argc, char* argv[]) {
         myClient->waitForNextCommand();
     }
 
-
     return 0;
 }

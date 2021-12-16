@@ -2,7 +2,7 @@
 
 Database::Database()
 {
-    _directory = "../TWMailer-Basic/database/"; // /home/battlecoob/dev/TWMailer-Basic/database
+    _directory = "/home/battlecoob/dev/TWMailer-Basic/database/"; // /home/battlecoob/dev/TWMailer-Basic/database
 }
 
 /*
@@ -29,15 +29,15 @@ void Database::FillDB()
         _users.push_back(newUser);
     }
     // iterate through users
-    for (auto u : _users)
+    for (auto &u : _users)
     {
         // iterate through messages in user folder
         for (const auto& dirEntry : directory_iterator(_directory + u.GetName()))
         {
             std::string tmpstr;
-            std::cout << dirEntry.path().string() << std::endl;
-
             Message newMsg;
+            // std::cout << dirEntry.path().string() << std::endl;
+
             std::ifstream msgFile;
             msgFile.open(dirEntry.path().string());
             
@@ -60,7 +60,7 @@ void Database::FillDB()
             msgFile.close();
             u.AddMessage(newMsg);
         }
-        u.UpdateMsgCounter();
+        // u.UpdateMsgCounter();
         std::cout << u.GetName() << u.GetMsgCounter() << std::endl;
     }
 }
@@ -75,6 +75,8 @@ const int Database::GetUserPositionInVector(User tmpuser)
     return -1;
 }
 
+
+
 const bool Database::IsNewUser(User user)
 {
     for (int c = 0; c < (int)_users.size(); c++)
@@ -88,7 +90,6 @@ const bool Database::IsNewUser(User user)
 bool Database::AddUser(User user)
 {
     // add to user vector
-    user.UpdateMsgCounter();
     _users.push_back(user);
 
     std::cout << "Msg counter: " << user.GetMsgCounter() << std::endl;
@@ -114,7 +115,7 @@ void Database::AddMessage(User tmpuser, Message tmpmsg)
     // add message to user
     _users[positionInVec].AddMessage(tmpmsg);
     std::string userDir =  (_directory + _users[positionInVec].GetName() + "/").c_str();
-    auto filename = _users[positionInVec].GetMsgCounter() + 1;
+    auto filename = _users[positionInVec].GetMsgCounter();
 
     // create file -> msg counter from folder name
     std::ofstream File(userDir + std::to_string(filename));
@@ -129,4 +130,20 @@ void Database::AddMessage(User tmpuser, Message tmpmsg)
     
     File.close();
     std::cout << "file created" << std::endl;
+}
+
+const User Database::List(User tmpuser)
+{
+    int positionInVec = GetUserPositionInVector(tmpuser);
+    if(positionInVec == -1)
+    {
+        User noUser;
+        noUser.SetName("User doesnt exist");
+        return noUser;
+    }
+    
+    //test
+    std::cout << positionInVec << std::endl;
+    
+    return _users[positionInVec];
 }

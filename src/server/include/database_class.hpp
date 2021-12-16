@@ -36,6 +36,8 @@ public:
     bool AddUser(User user/*, std::string mailSpoolDir*/);
     void AddMessage(User user, Message tmpmsg);
 
+    const User List(User user);
+
     // bool SafeMessage(User user);
     // bool GetMessage(User user, /* unique identifier */);
     // bool DeleteMessage(User user, /* unique identifier */);

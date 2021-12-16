@@ -7,6 +7,7 @@ User::User()
 
 void User::AddMessage(Message msg)
 {
+    _msgCount++;
+    msg.SetId(_msgCount);
     _messages.push_back(msg);
-    UpdateMsgCounter();
 }

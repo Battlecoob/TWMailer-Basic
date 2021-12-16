@@ -144,13 +144,22 @@ void Client::READ() {
 }
 void Client::LIST() {
 
+   int count;
    std::cout<<">>Username:";
    bool nextline = sendLine();
    if(nextline) {
    nextline = recvLine();
+   count = std::stoi(_buffer);
    }
 
 
+   for (int i = 0; i < count; i++)
+   {
+      nextline = recvLine();
+      std::cout << _buffer << std::endl;
+   }
+   
+   
    /*
    int count = _buffer;
    for (int i = 0; i < count; i++)

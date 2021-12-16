@@ -163,22 +163,53 @@ void Server::ClientComm(void *data)
             
             Send();
         }
-
         else if (strcmp(buffer, "LIST") == 0)
+        {
+            if (send(*currentSocket, "OK", 3, 0) == -1)
+            {
+                std::cerr << "Send answer failed." << std::endl;
+                throw "Send answer failed.";
+            }
+
             List();
-
+        }
         else if (strcmp(buffer, "READ") == 0)
+        {
+            if (send(*currentSocket, "OK", 3, 0) == -1)
+            {
+                std::cerr << "Send answer failed." << std::endl;
+                throw "Send answer failed.";
+            }
+
             Read();
-
+        }
         else if (strcmp(buffer, "DEL") == 0)
+        {
+            if (send(*currentSocket, "OK", 3, 0) == -1)
+            {
+                std::cerr << "Send answer failed." << std::endl;
+                throw "Send answer failed.";
+            }
+
             Delete();
-
+        }    
         else if (strcmp(buffer, "QUIT") == 0)
-            strcpy(buffer, "quit");
+        {
+            if (send(*currentSocket, "OK", 3, 0) == -1)
+            {
+                std::cerr << "Send answer failed." << std::endl;
+                throw "Send answer failed.";
+            }
 
+            strcpy(buffer, "quit");
+        }
         else
         {
-            std::cout << "no compare" << std::endl;
+            if (send(*currentSocket, "OK", 3, 0) == -1)
+            {
+                std::cerr << "Send answer failed." << std::endl;
+                throw "Send answer failed.";
+            }
         }
 
     } while (strcmp(buffer, "quit") != 0 && !_abortRequested);
@@ -366,6 +397,8 @@ void Server::Send()
 
     // _tmpUser.AddMessage(_tmpMsg); // user + msg soll dann der db uebergeben werden
 
+    // just one send func for db
+
     if(_db.IsNewUser(_tmpUser))
     {
         std::cout << "dir test" << std::endl;
@@ -380,6 +413,99 @@ void Server::Send()
 
 void Server::List() 
 {
+    printf("in list\n");
+
+    int size;
+    char buffer[_buf];
+    bool period = false;
+    bool usernameSet = false;
+
+    do
+    {
+        // wait for input
+        size = recv(_newSocket, buffer, _buf - 1, 0);
+        if (size == -1)
+        {
+            if (_abortRequested)
+                std::cerr << "recv error after aborted." << std::endl;
+
+            else
+                std::cerr << "recv error." << std::endl;
+
+            break;
+        }
+
+        if (size == 0)
+        {
+            std::cout << "Client closed remote socket." << std::endl;
+            break;
+        }
+
+        if (buffer[size - 2] == '\r' && buffer[size - 1] == '\n')
+        {
+            size -= 2;
+        }
+        else if (buffer[size - 1] == '\n')
+        {
+            --size;
+        }
+
+        buffer[size] = '\0';
+
+        if (strcmp(buffer, ".") == 0) // end of command
+        {
+            period = true;
+            break;
+        }
+
+        std::cout << "Message received: " << buffer << std::endl;
+        if(!usernameSet)
+        {
+            if(SecureInput(buffer))
+            {
+                _tmpUser.SetName(buffer);
+                usernameSet = true;
+
+                _tmpUser = _db.List(_tmpUser);
+                
+                //test
+                std::cout << _tmpUser.GetName() << std::endl;
+
+                //message counter
+                auto userMsgVector = _tmpUser.GetMessages();
+                int msgCount = (int)_tmpUser.GetMessages().size();
+
+                if(msgCount > _buf)
+                    EXIT_FAILURE;
+
+                std::string strMsgCount = std::to_string(msgCount);
+
+                if (send(_newSocket, strMsgCount.c_str(), (int)strMsgCount.size(), 0) == -1)
+                {
+                    std::cerr << "Send answer failed." << std::endl;
+                    throw "Send answer failed.";
+                }
+                
+                for (int c = 0; c < msgCount; c++)
+                {
+                    //  id
+                    auto userMsg = userMsgVector[c];
+                    int id =  userMsg.GetId();
+                    std::string strId = std::to_string(id);
+
+                    // subject
+                    std::string strSub = userMsg.GetSubject();
+                    std::string sendText = strId + ": " + strSub;
+
+                    if (send(_newSocket, sendText.c_str(), (int)sendText.size(), 0) == -1)
+                    {
+                        std::cerr << "Send answer failed." << std::endl;
+                        throw "Send answer failed.";
+                    }
+                }                
+            }
+        }
+    } while (!period);
 }
 
 void Server::Read() 
