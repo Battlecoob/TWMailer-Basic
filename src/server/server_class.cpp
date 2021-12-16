@@ -401,7 +401,7 @@ void Server::Send()
 
     if(_db.IsNewUser(_tmpUser))
     {
-        std::cout << "dir test" << std::endl;
+        std::cout << _tmpUser.GetMsgCounter() << std::endl;
         if(!_db.AddUser(_tmpUser)) 
         {
             // errorhandeling

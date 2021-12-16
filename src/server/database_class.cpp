@@ -2,7 +2,11 @@
 
 Database::Database()
 {
-    _directory = "/home/battlecoob/dev/TWMailer-Basic/database/"; // /home/battlecoob/dev/TWMailer-Basic/database
+    _directory = "../TWMailer-Basic/database/"; // /home/battlecoob/dev/TWMailer-Basic/database
+    char realDir[PATH_MAX];
+    realpath(_directory.c_str(), realDir);
+    _directory = realDir;
+    _directory += "/";
 }
 
 /*
@@ -94,8 +98,9 @@ bool Database::AddUser(User user)
 
     std::cout << "Msg counter: " << user.GetMsgCounter() << std::endl;
 
+    // database directory
     char resolved_path[PATH_MAX];
-    realpath((_directory + user.GetName()).c_str(), resolved_path);
+    (_directory + user.GetName()).c_str();
 
     if(mkdir(resolved_path, 0777) == -1){
         std::cerr << "Error :  " << strerror(errno) << std::endl;
@@ -141,7 +146,7 @@ const User Database::List(User tmpuser)
         noUser.SetName("User doesnt exist");
         return noUser;
     }
-    
+
     //test
     std::cout << positionInVec << std::endl;
     
