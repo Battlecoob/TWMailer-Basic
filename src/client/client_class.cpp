@@ -1,7 +1,9 @@
 #include "include/client_class.hpp"
 
-Client::Client(/* args */)
+Client::Client(std::string ip, int port)
 {
+   _ip = ip;
+   _port = port;
 }
 
 Client::~Client()
@@ -22,7 +24,7 @@ bool Client::createConnection() {
     address.sin_family = AF_INET;         // IPv4
 
     address.sin_port = htons(_port);
-    inet_aton("127.0.0.1", &address.sin_addr);
+    inet_aton(_ip.c_str(), &address.sin_addr);
    
    if (connect(_create_socket,
                (struct sockaddr *)&address,

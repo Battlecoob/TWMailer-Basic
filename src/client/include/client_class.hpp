@@ -26,10 +26,11 @@ private:
     int _create_socket;
     char _buffer[1024];
     int _size;
+    std::string _ip = "127.0.0.1";
     std::string _bufferstring;
 
 public:
-    Client(/* args */);
+    Client(std::string ip, int port);
     ~Client();
 
     void readArguments(/* args */);
