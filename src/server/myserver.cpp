@@ -3,13 +3,14 @@
 #include "include/server_class.hpp"
 
 #define PORT 6543
-#define PATH ""
+#define PATH "my_mail_db"
 
 int main() {
     std::cout << "myserver.cpp started..." << std::endl;
     
-    Server server(PORT, PATH);
-    
+    Database db;
+    Server server(PORT, PATH, &db);
+
     try
     {
         server.StartServer();

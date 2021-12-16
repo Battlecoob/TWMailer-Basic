@@ -8,6 +8,16 @@
 #include <string.h>
 #include <iostream>
 
+enum Command 
+{ 
+    _send,
+    _list,
+    _read,
+    _del,
+    _help,
+    _quit
+};
+
 class Client
 {
 private:
@@ -15,8 +25,8 @@ private:
     int _port = 6543;
     int _create_socket;
     char _buffer[1024];
+    int _size;
     std::string _bufferstring;
-
 
 public:
     Client(/* args */);
@@ -33,6 +43,12 @@ public:
 
     void waitForNextCommand(/* args */);
     //loop that waits for user input, starts other method depending on input
+
+    Command readCommand();
+    void executeCommand(Command execute);
+
+    bool sendLine();
+    bool recvLine();
 
     void SEND(/* args */);
 
@@ -53,3 +69,4 @@ public:
 
 
 };
+

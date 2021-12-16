@@ -1,6 +1,3 @@
-*
-*/
-!src/**.cpp
-!src/**.hpp
-!src/include
-!src/Makefile
+./vscode/*
+./bin/*
+./obj/*
