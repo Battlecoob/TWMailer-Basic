@@ -1,15 +1,17 @@
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <iostream>
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
-enum Command 
-{ 
+#include "/home/battlecoob/dev/TWMailer-Basic/src/share/functions.hpp" // zu dumm fuer var pfad
+
+enum Command
+{
     _send,
     _list,
     _read,
@@ -31,43 +33,24 @@ private:
 
 public:
     Client(std::string ip, int port);
-    ~Client();
-
-    void readArguments(/* args */);
-    //reads arguments and wrapps them into the class structure
-
-    bool createConnection(/* args */);
-    //connects to server (websocket, ports, etc...)
-
-    bool clearConnection(/* args */);
-    //disconnects from server (websocket, ports, etc...)
-
-    void waitForNextCommand(/* args */);
-    //loop that waits for user input, starts other method depending on input
 
     Command readCommand();
     void executeCommand(Command execute);
 
+    void readArguments();
+    // reads arguments and wrapps them into the class structure
+    bool createConnection();
+    // connects to server (websocket, ports, etc...)
+    bool clearConnection();
+    // disconnects from server (websocket, ports, etc...)
+    void waitForNextCommand();
+    // loop that waits for user input, starts other method depending on input
+
+    void SEND();
+    void LIST();
+    void READ();
+    void DEL();
+
     bool sendLine();
     bool recvLine();
-
-    void SEND(/* args */);
-
-    void LIST(/* args */);
-
-    void READ(/* args */);
-
-    void DEL(/* args */);
-
-    void HELP(/* args */);
-    //lists the valid commands
-
-    //void QUIT(); ???
-
-    //void submit(/* args */); ???
-    //send message to server (maybe already done in SEND,LIST.....)
-
-
-
 };
-

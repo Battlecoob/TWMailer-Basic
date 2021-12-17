@@ -7,7 +7,12 @@ User::User()
 
 void User::AddMessage(Message msg)
 {
-    _msgCount++;
-    msg.SetId(_msgCount);
+    if (msg.GetId() < 0)
+        msg.SetId(_msgCount + 1);
+
+    while (msg.GetId() > _msgCount)
+        _msgCount = msg.GetId();
+
+    // funkioniert nicht gscheit, weil wenn eine nachricht geloescht wird, soll dieser vector eig leer sein
     _messages.push_back(msg);
 }

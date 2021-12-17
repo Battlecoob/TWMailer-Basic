@@ -1,16 +1,10 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
-#include <experimental/filesystem>
 #include <sys/stat.h> // mkdir
 #include <sys/types.h>
 #include <bits/stdc++.h>
-
-// #ifndef BOOST_ALL_DYN_LINK
-// #   define BOOST_ALL_DYN_LINK
-// #endif 
-// #include <boost/filesystem.hpp>
-
+#include <experimental/filesystem>
 
 #include "user_class.hpp"
 
@@ -25,20 +19,16 @@ public:
 
     void SetDirectory(std::string dir) { _directory += dir; }
 
-    // const User GetUserByName(User tmpuser);
     const int GetUserPositionInVector(User tmpuser);
     const std::vector<User> GetUsers() { return _users; }
-    const std::string GetDirectory() {return _directory; }
+    const std::string GetDirectory() { return _directory; }
 
     void FillDB();
 
-    const bool IsNewUser(User user);
-    bool AddUser(User user/*, std::string mailSpoolDir*/);
-    void AddMessage(User user, Message tmpmsg);
-
+    bool AddUser(User user);
+    bool IsNewUser(User user);
     const User List(User user);
-
-    // bool SafeMessage(User user);
-    // bool GetMessage(User user, /* unique identifier */);
-    // bool DeleteMessage(User user, /* unique identifier */);
+    bool AddMessage(User user, Message tmpmsg);
+    bool Delete(std::string username, std::string file);
+    Message Read(std::string username, std::string file); // not finished
 };

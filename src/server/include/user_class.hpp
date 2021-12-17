@@ -21,5 +21,6 @@ public:
     const std::vector<Message> GetMessages() { return _messages; }
 
     void AddMessage(Message msg);
-    void IncrCounter() { _msgCount++;}
+    void IncrCounter() { _msgCount++; }
+    void SetCounter(int i) { _msgCount = i; }
 };

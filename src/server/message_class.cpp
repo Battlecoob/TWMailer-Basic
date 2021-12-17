@@ -3,4 +3,5 @@
 Message::Message()
 {
     _messageText.reserve(80); // sets max char to 80
+    _id = -1;
 }
