@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
 
     Database db;
     Server server(port, path, &db);
+    db.SetDirectory(path);
 
     try
     {

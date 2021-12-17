@@ -291,8 +291,9 @@ void Server::Send()
                 throw "User couldnt be created";
         }
         _db.AddMessage(_tmpUser, tmpMsg);
-    }
-    throw "Something went wrong";
+    } 
+    else
+        throw "Something went wrong";
 }
 
 void Server::List()

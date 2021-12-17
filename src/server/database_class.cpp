@@ -95,8 +95,11 @@ bool Database::AddUser(User user)
 bool Database::AddMessage(User tmpuser, Message tmpmsg)
 {
     int positionInVec = GetUserPositionInVector(tmpuser);
-    if (positionInVec != -1)
+    if (positionInVec == -1)
+    {
+        std::cout << "user doesnt exist" << std::endl;
         return EXIT_FAILURE;
+    }
 
     // add message to user
     _users[positionInVec].AddMessage(tmpmsg);

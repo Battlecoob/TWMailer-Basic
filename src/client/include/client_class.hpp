@@ -8,7 +8,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include "/home/battlecoob/dev/TWMailer-Basic/src/share/functions.hpp" // zu dumm fuer var pfad
+#include "../../share/functions.hpp"
 
 enum Command
 {
